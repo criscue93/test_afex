@@ -5,7 +5,7 @@ import { queryDTO, querySelectDTO, ResponseDTO } from 'src/dto/query.dto';
 export class queryService {
   constructor(
     @Inject('CONNECT_REPOSITORY')
-    private victimasRepository,
+    private testRepository,
   ) {}
 
   async selectQuery(data: querySelectDTO): Promise<ResponseDTO> {
@@ -19,7 +19,7 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .select(data.select)
         .from(data.table, data.alias)
@@ -59,56 +59,10 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .select(data.select)
         .from(data.table, data.alias)
-        .where(data.where.where, data.where.values)
-        .execute();
-
-      if (queryReturn.length > 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      } else if (queryReturn.length === 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      }
-    } catch (error) {
-      response.message = 'No se logró realizar la Consulta.';
-      response.response = {
-        errors: { query: [`${error.message}`] },
-      };
-      response.status = 500;
-    }
-
-    // === RESPUESTAS ===
-    return response;
-  }
-
-  async selectWhereQueryInner1(data: querySelectDTO): Promise<ResponseDTO> {
-    // === INICIALIZACION DE VARIABLES ===
-    const response: ResponseDTO = {
-      error: true,
-      message: 'Existe problemas con selectQuery.',
-      response: {},
-      status: 422,
-    };
-
-    // === OPERACION ===
-    try {
-      const queryReturn = await this.victimasRepository
-        .createQueryBuilder()
-        .select(data.select)
-        .from(data.table, data.alias)
-        .leftJoin(
-          data.inner.leftInner1,
-          data.inner.innerAlias1,
-          data.inner.innerCondicion1,
-        )
         .where(data.where.where, data.where.values)
         .execute();
 
@@ -146,113 +100,10 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .select(data.select)
         .from(data.table, data.alias)
-        .where(data.where.where, data.where.values)
-        .orderBy(data.order.sortField, data.order.sortType)
-        .offset(data.order.skip)
-        .limit(data.order.limit)
-        .execute();
-
-      if (queryReturn.length > 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      } else if (queryReturn.length === 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      }
-    } catch (error) {
-      response.message = 'No se logró realizar la Consulta.';
-      response.response = {
-        errors: { query: [`${error.message}`] },
-      };
-      response.status = 500;
-    }
-
-    // === RESPUESTAS ===
-    return response;
-  }
-
-  async selectFilterQueryInner1(data: querySelectDTO): Promise<ResponseDTO> {
-    // === INICIALIZACION DE VARIABLES ===
-    const response: ResponseDTO = {
-      error: true,
-      message: 'Existe problemas con selectQuery.',
-      response: {},
-      status: 422,
-    };
-
-    // === OPERACION ===
-    try {
-      const queryReturn = await this.victimasRepository
-        .createQueryBuilder()
-        .select(data.select)
-        .from(data.table, data.alias)
-        .leftJoin(
-          data.inner.leftInner1,
-          data.inner.innerAlias1,
-          data.inner.innerCondicion1,
-        )
-        .where(data.where.where, data.where.values)
-        .orderBy(data.order.sortField, data.order.sortType)
-        .offset(data.order.skip)
-        .limit(data.order.limit)
-        .execute();
-
-      if (queryReturn.length > 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      } else if (queryReturn.length === 0) {
-        response.error = false;
-        response.message = `Se logró obtener ${queryReturn.length} resultados de la tabla ${data.table}.`;
-        response.response = { data: queryReturn, total: queryReturn.length };
-        response.status = 200;
-      }
-    } catch (error) {
-      response.message = 'No se logró realizar la Consulta.';
-      response.response = {
-        errors: { query: [`${error.message}`] },
-      };
-      response.status = 500;
-    }
-
-    // === RESPUESTAS ===
-    return response;
-  }
-
-  async selectFilterQueryInner2(data: querySelectDTO): Promise<ResponseDTO> {
-    // === INICIALIZACION DE VARIABLES ===
-    const response: ResponseDTO = {
-      error: true,
-      message: 'Existe problemas con selectQuery.',
-      response: {},
-      status: 422,
-    };
-
-    // === OPERACION ===
-    try {
-      const queryReturn = await this.victimasRepository
-        .createQueryBuilder()
-        .select(data.select)
-        .from(data.table, data.alias)
-        .leftJoin(
-          data.inner.leftInner1,
-          data.inner.innerAlias1,
-          data.inner.innerCondicion1,
-        )
-        .leftJoin(
-          data.inner.leftInner2,
-          data.inner.innerAlias2,
-          data.inner.innerCondicion2,
-        )
         .where(data.where.where, data.where.values)
         .orderBy(data.order.sortField, data.order.sortType)
         .offset(data.order.skip)
@@ -293,7 +144,7 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .insert()
         .into(data.table)
@@ -327,7 +178,7 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .update(data.table)
         .set(data.set)
@@ -361,7 +212,7 @@ export class queryService {
 
     // === OPERACION ===
     try {
-      const queryReturn = await this.victimasRepository
+      const queryReturn = await this.testRepository
         .createQueryBuilder()
         .delete()
         .from(data.table)

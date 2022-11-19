@@ -15,7 +15,7 @@ import { Proyect, ProyectSchema } from './schemas/proyect.schema';
     QueryModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.APP_MONGO, {
-      connectionName: 'proyect',
+      connectionName: 'students',
     }),
     MongooseModule.forFeature(
       [
@@ -24,7 +24,7 @@ import { Proyect, ProyectSchema } from './schemas/proyect.schema';
           schema: ProyectSchema,
         },
       ],
-      'proyect',
+      'students',
     ),
   ],
   controllers: [AppController],

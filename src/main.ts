@@ -17,7 +17,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('PROYECT - API')
+    .setTitle('TEST - AFEX')
     .addBearerAuth()
     .setDescription(
       'Basado en principios REST, las APIs devuelve metadatos JSON.',
@@ -29,7 +29,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document, {
-    customSiteTitle: 'Documentación',
+    customSiteTitle: 'Test - AFEX',
     customfavIcon: 'https://nestjs.com/img/logo_text.svg',
     customCss: '.swagger-ui .topbar { display: none }',
   });
