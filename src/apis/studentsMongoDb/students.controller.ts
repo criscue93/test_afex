@@ -4,13 +4,12 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Put,
   Res,
   Version,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { validate } from 'class-validator';
 import { Response } from 'express';
 import { sanitizeString } from '../../helper/sanatize.helper';
@@ -19,13 +18,12 @@ import { studentDTO } from './students.dto';
 import { StudentMongoDbService } from './students.service';
 
 @ApiTags('CRUD STUDENTS MONGODB')
-@ApiBearerAuth()
-@Controller('api')
+@Controller('api/students/mongodb/')
 export class StudentMongoDbController {
   constructor(private readonly serviceData: StudentMongoDbService) {}
 
   @Version('1')
-  @Get('students/mongodb/list')
+  @Get('list')
   @ApiOperation({
     summary: 'Servicio para obtener toda la información de la tabla.',
   })
@@ -35,7 +33,7 @@ export class StudentMongoDbController {
     response = {
       error: true,
       message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+        'Existen problemas con el servicio de listar todos los estudiantes.',
       response: {},
       status: 500,
     };
@@ -48,38 +46,51 @@ export class StudentMongoDbController {
   }
 
   @Version('1')
-  @Post('students/mongodb/listFilter')
+  @Post('search')
   @ApiOperation({
-    summary:
-      'Servicio para obtener toda la información de la tabla con filtros.',
+    summary: 'Servicio para buscar un estudiante.',
   })
-  async listFilter(@Res() res: Response, @Body() body: any) {
+  @ApiBody({
+    schema: {
+      properties: {
+        id: { type: 'varchar', example: 'kdsf645675sdf6576' },
+      },
+    },
+  })
+  async search(@Res() res: Response, @Body() body: any) {
     /** Inicialización de Variables **/
     let response: IResponse;
     response = {
       error: true,
-      message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+      message: 'Existen problemas con el servicio de buscar un estudiante.',
       response: {},
       status: 500,
     };
 
     /** Operación **/
-    response = await this.serviceData.listFilter(body);
+    response = await this.serviceData.search(body);
 
     /** Respuesta **/
     return res.status(response.status).json(response);
   }
 
   @Version('1')
-  @Post('students/mongodb/insert')
+  @Post('insert')
   @ApiOperation({
-    summary: 'Servicio para insertar nuevos datos a la tabla.',
+    summary: 'Servicio para registrar un nuevo estudiante.',
   })
   @ApiBody({
     schema: {
       properties: {
-        nombre: { type: 'string', example: 'Nombre del genero' },
+        nombre: { type: 'varchar', example: 'Nombres' },
+        paterno: { type: 'varchar', example: 'Apellido Paterno' },
+        materno: { type: 'varchar', example: 'Apellito Materno' },
+        documento: { type: 'varchar', example: 'Número de Documento' },
+        celular: { type: 'number', example: 59132456785 },
+        nacimiento: { type: 'varchar', example: '1993-08-25' },
+        direccion: { type: 'varchar', example: 'Direccion del domicilio' },
+        email: { type: 'varchar', example: 'Email - Opcional' },
+        sexo: { type: 'varchar', example: 'F o M' },
       },
     },
   })
@@ -89,7 +100,7 @@ export class StudentMongoDbController {
     response = {
       error: true,
       message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+        'Existen problemas con el servicio de registrar un nuevo estudiante.',
       response: {},
       status: 500,
     };
@@ -97,6 +108,14 @@ export class StudentMongoDbController {
     /** Operación **/
     const data = new studentDTO();
     data.nombre = sanitizeString(body.nombre);
+    data.paterno = sanitizeString(body.paterno);
+    data.materno = sanitizeString(body.materno);
+    data.documento = body.documento;
+    data.celular = body.celular;
+    data.nacimiento = body.nacimiento;
+    data.direccion = sanitizeString(body.direccion);
+    data.email = body.email;
+    data.sexo = sanitizeString(body.sexo);
 
     const valida = await validate(data);
     if (valida.length > 0) {
@@ -124,28 +143,36 @@ export class StudentMongoDbController {
   }
 
   @Version('1')
-  @Put('students/mongodb/update/:id')
+  @Put('update/:id')
   @ApiOperation({
-    summary: 'Servicio para editar los datos de una tupla.',
+    summary: 'Servicio para editar los datos de un estudiante.',
   })
   @ApiBody({
     schema: {
       properties: {
-        nombre: { type: 'string', example: 'Nombre del genero' },
+        nombre: { type: 'varchar', example: 'Nombres' },
+        paterno: { type: 'varchar', example: 'Apellido Paterno' },
+        materno: { type: 'varchar', example: 'Apellito Materno' },
+        documento: { type: 'varchar', example: 'Número de Documento' },
+        celular: { type: 'number', example: 59132456785 },
+        nacimiento: { type: 'varchar', example: '1993-08-25' },
+        direccion: { type: 'varchar', example: 'Direccion del domicilio' },
+        email: { type: 'varchar', example: 'Email - Opcional' },
+        sexo: { type: 'varchar', example: 'F o M' },
       },
     },
   })
   async updateData(
     @Res() res: Response,
     @Body() body: studentDTO,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ) {
     /** Inicialización de Variables **/
     let response: IResponse;
     response = {
       error: true,
       message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+        'Existen problemas con el servicio de editar los datos de un estudiante.',
       response: {},
       status: 500,
     };
@@ -153,6 +180,14 @@ export class StudentMongoDbController {
     /** Operación **/
     const data = new studentDTO();
     data.nombre = sanitizeString(body.nombre);
+    data.paterno = sanitizeString(body.paterno);
+    data.materno = sanitizeString(body.materno);
+    data.documento = body.documento;
+    data.celular = body.celular;
+    data.nacimiento = body.nacimiento;
+    data.direccion = sanitizeString(body.direccion);
+    data.email = body.email;
+    data.sexo = sanitizeString(body.sexo);
 
     const valida = await validate(data);
     if (valida.length > 0) {
@@ -180,40 +215,16 @@ export class StudentMongoDbController {
   }
 
   @Version('1')
-  @Patch('students/mongodb/status/:id')
+  @Delete('delete/:id')
   @ApiOperation({
-    summary: 'Servicio para cambiar el estado de una tupla.',
+    summary: 'Servicio para eliminar un estudiante.',
   })
-  async statusData(@Res() res: Response, @Param('id') id: number) {
+  async deleteData(@Res() res: Response, @Param('id') id: string) {
     /** Inicialización de Variables **/
     let response: IResponse;
     response = {
       error: true,
-      message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
-      response: {},
-      status: 500,
-    };
-
-    /** Operación **/
-    response = await this.serviceData.status(id);
-
-    /** Respuesta **/
-    return res.status(response.status).json(response);
-  }
-
-  @Version('1')
-  @Delete('students/mongodb/delete/:id')
-  @ApiOperation({
-    summary: 'Servicio para eliminar una tupla.',
-  })
-  async deleteData(@Res() res: Response, @Param('id') id: number) {
-    /** Inicialización de Variables **/
-    let response: IResponse;
-    response = {
-      error: true,
-      message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+      message: 'Existen problemas con el servicio de eliminar un estudiante.',
       response: {},
       status: 500,
     };

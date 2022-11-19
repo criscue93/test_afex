@@ -1,35 +1,40 @@
-import { Injectable } from '@nestjs/common';
-import { verificarVariable } from '../../helper/verifyVariable.helper';
+import { Inject, Injectable } from '@nestjs/common';
 import { IResponse } from '../../interfaces/IResponse';
-import { queryService } from '../../services/querys.service';
-import { StudentMongoDbQueryService } from './students-query.service';
 import { studentDTO } from './students.dto';
+import { DateTime } from 'luxon';
+import { calculateAge } from 'src/helper/calculateAge.helper';
 
 @Injectable()
 export class StudentMongoDbService {
   constructor(
-    private readonly queryServiceData: StudentMongoDbQueryService,
-    private readonly query: queryService,
+    @Inject('STUDENT_MODEL')
+    private studentModel,
   ) {}
 
   async list(): Promise<IResponse> {
     /** Inicialización de Variables **/
-    let response = {
+    const response = {
       error: true,
       message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla.',
+        'Existen problemas con el servicio de listar todos los estudiantes.',
       response: {},
       status: 500,
     };
 
     /** Operación **/
     try {
-      response = await this.queryServiceData.list();
+      const respuesta = await this.studentModel.find().exec();
+
+      response.error = false;
+      response.message =
+        'Se logró obtener la lista de estudiantes correctamente';
+      response.response = respuesta;
+      response.status = 200;
     } catch (error) {
       response.error = true;
       response.message = 'No se pudo realizar la solicitud.';
       response.response = {
-        errors: { solicitud: [`${error.message}`] },
+        errors: { student: [`${error.message}`] },
       };
       response.status = 422;
     }
@@ -38,85 +43,23 @@ export class StudentMongoDbService {
     return response;
   }
 
-  async listFilter(body: any) {
+  async search(body: any) {
     /** Inicialización de Variables **/
-    let response = {
+    const response = {
       error: true,
-      message:
-        'Existen problemas con el servicio de listar todos los datos de la tabla con filtros.',
+      message: 'Existen problemas con el servicio de buscar un estudiante.',
       response: {},
       status: 500,
     };
 
     /** Operación **/
-    const fields = [
-      {
-        key: 'createdAt',
-        value: 'createdAt',
-      },
-      {
-        key: 'nombreGenero',
-        value: 'nombreGenero',
-      },
-      {
-        key: 'estadoGenero',
-        value: 'estadoGenero',
-      },
-    ];
+    const respuesta = await this.studentModel.findById(body.id);
 
-    let fiel = 'gen.id';
-    let type = 'DESC';
-
-    if (body.sort) {
-      if (body.sort.length > 0) {
-        if (body.sort[0].type !== 'none') {
-          const fielFind = fields.find((f) => f.key === body.sort[0].field);
-
-          if (fielFind) {
-            fiel = fielFind.value;
-            type = body.sort[0].type.toUpperCase();
-          }
-        }
-      }
-    }
-
-    const data = {
-      where: 'TRUE',
-      whereValue: {},
-      sortField: fiel,
-      sortType: type,
-      page: body.page || 1,
-      perPage: body.perPage || 5,
-      skip: 5,
-    };
-
-    data.skip = data.perPage * (data.page - 1);
-    let where = '';
-
-    if (body.columnFilters) {
-      if (verificarVariable(body.columnFilters.nombreGenero)) {
-        where += ' AND gen.nombreGenero LIKE :nombreGenero';
-        data.whereValue = {
-          ...data.whereValue,
-          ...{
-            nombreGenero: `%${body.columnFilters.nombreGenero}%`,
-          },
-        };
-      }
-
-      if (verificarVariable(body.columnFilters.estadoGenero)) {
-        where += ' AND gen.estadoGenero >= :estadoGenero';
-        data.whereValue = {
-          ...data.whereValue,
-          ...{
-            estadoGenero: body.columnFilters.estadoGenero,
-          },
-        };
-      }
-    }
-
-    data.where += where;
-    response = await this.queryServiceData.listFilter(data);
+    response.error = false;
+    response.message =
+      'Se logró obtener los datos del estudiante correctamente.';
+    response.response = respuesta;
+    response.status = 200;
 
     /** Respuesta **/
     return response;
@@ -124,112 +67,52 @@ export class StudentMongoDbService {
 
   async insert(data: studentDTO): Promise<IResponse> {
     /** Inicialización de Variables **/
-    let response = {
+    const response = {
       error: true,
       message:
-        'Existen problemas con el servicio de registrar nuevos datos a la tabla.',
+        'Existen problemas con el servicio de registrar un nuevo estudiante.',
       response: {},
       status: 500,
     };
 
     /** Operación **/
     try {
-      response = await this.query.selectWhereQuery({
-        table: 'vict_cat_genero',
-        alias: 'gen',
-        select: 'DISTINCT(gen.id)',
-        where: {
-          where: 'gen.nombre = :nombre',
-          values: { nombre: data.nombre },
-        },
-      });
-
-      if (response.response['total'] === 1) {
-        response.error = true;
-        response.message = `El nombre ${data.nombre} ya se encuentra registrado.`;
-        response.response = {
-          errors: {
-            solicitud: [`El nombre ${data.nombre} ya se encuentra registrado.`],
-          },
-        };
-        response.status = 422;
-      } else {
-        response = await this.queryServiceData.insert(data);
-      }
-    } catch (error) {
-      response.error = true;
-      response.message = 'No se pudo realizar la solicitud.';
-      response.response = {
-        errors: { solicitud: [`${error.message}`] },
-      };
-      response.status = 422;
-    }
-
-    /** Respuesta **/
-    return response;
-  }
-
-  async update(data: studentDTO, id: number): Promise<IResponse> {
-    /** Inicialización de Variables **/
-    let response = {
-      error: true,
-      message:
-        'Existen problemas con el servicio de editar los datos de una tupla.',
-      response: {},
-      status: 500,
-    };
-
-    /** Operación **/
-    try {
-      response = await this.queryServiceData.update(data, id);
-    } catch (error) {
-      response.error = true;
-      response.message = 'No se pudo realizar la solicitud.';
-      response.response = {
-        errors: { solicitud: [`${error.message}`] },
-      };
-      response.status = 422;
-    }
-
-    /** Respuesta **/
-    return response;
-  }
-
-  async status(id: number): Promise<IResponse> {
-    /** Inicialización de Variables **/
-    let response = {
-      error: true,
-      message:
-        'Existen problemas con el servicio de cambiar el estado de una tupla.',
-      response: {},
-      status: 500,
-    };
-
-    /** Operación **/
-    try {
-      response = await this.query.selectWhereQuery({
-        table: 'vict_cat_genero',
-        alias: 'gen',
-        select: 'DISTINCT(gen.id), gen.nombre, gen.estado',
-        where: {
-          where: 'gen.id = :id',
-          values: { id },
-        },
-      });
-
-      let estado = response.response['data'][0].estado;
-      if (estado === 1) {
-        estado = 0;
-      } else if (estado === 0) {
-        estado = 1;
+      let nombreCompleto = `${data.nombre} ${data.paterno}`;
+      if (data.materno != '') {
+        nombreCompleto = `${data.nombre} ${data.paterno} ${data.materno}`;
       }
 
-      response = await this.queryServiceData.status(id, estado);
+      const edadCalculate = await calculateAge(
+        DateTime.fromISO(data.nacimiento).toFormat('dd-MM-yyyy'),
+      );
+
+      const dataInsert = {
+        nombre: data.nombre,
+        primerApellido: data.paterno,
+        segundoApellido: data.materno || '',
+        nombreCompleto,
+        numeroDocumento: data.documento,
+        celular: data.celular,
+        fechaNacimiento: data.nacimiento,
+        edad: edadCalculate,
+        direccion: data.direccion,
+        email: data.email || '',
+        sexo: data.sexo,
+        estado: 1,
+      };
+
+      const respuesta = await this.studentModel(dataInsert);
+      await respuesta.save();
+
+      response.error = false;
+      response.message = `Se logró registrar al estudiante correctamente.`;
+      response.response = {};
+      response.status = 200;
     } catch (error) {
       response.error = true;
       response.message = 'No se pudo realizar la solicitud.';
       response.response = {
-        errors: { solicitud: [`${error.message}`] },
+        errors: { student: [`${error.message}`] },
       };
       response.status = 422;
     }
@@ -238,23 +121,84 @@ export class StudentMongoDbService {
     return response;
   }
 
-  async delete(id: number): Promise<IResponse> {
+  async update(data: studentDTO, id: string): Promise<IResponse> {
     /** Inicialización de Variables **/
-    let response = {
+    const response = {
       error: true,
-      message: 'Existen problemas con el servicio de eliminar una tupla.',
+      message:
+        'Existen problemas con el servicio de editar los datos de un estudiante.',
       response: {},
       status: 500,
     };
 
     /** Operación **/
     try {
-      response = await this.queryServiceData.delete(id);
+      let nombreCompleto = `${data.nombre} ${data.paterno}`;
+      if (data.materno != '') {
+        nombreCompleto = `${data.nombre} ${data.paterno} ${data.materno}`;
+      }
+
+      const edadCalculate = await calculateAge(
+        DateTime.fromISO(data.nacimiento).toFormat('dd-MM-yyyy'),
+      );
+
+      const dataInsert = {
+        nombre: data.nombre,
+        primerApellido: data.paterno,
+        segundoApellido: data.materno || '',
+        nombreCompleto,
+        numeroDocumento: data.documento,
+        celular: data.celular,
+        fechaNacimiento: data.nacimiento,
+        edad: edadCalculate,
+        direccion: data.direccion,
+        email: data.email || '',
+        sexo: data.sexo,
+        estado: 1,
+      };
+
+      await this.studentModel.findByIdAndUpdate(id, dataInsert);
+
+      response.error = false;
+      response.message =
+        'Se logró editar los datos del estudiante correctamente.';
+      response.response = {};
+      response.status = 200;
     } catch (error) {
       response.error = true;
       response.message = 'No se pudo realizar la solicitud.';
       response.response = {
-        errors: { solicitud: [`${error.message}`] },
+        errors: { student: [`${error.message}`] },
+      };
+      response.status = 422;
+    }
+
+    /** Respuesta **/
+    return response;
+  }
+
+  async delete(id: string): Promise<IResponse> {
+    /** Inicialización de Variables **/
+    const response = {
+      error: true,
+      message: 'Existen problemas con el servicio de eliminar un estudiante.',
+      response: {},
+      status: 500,
+    };
+
+    /** Operación **/
+    try {
+      await this.studentModel.deleteOne({ _id: id });
+
+      response.error = false;
+      response.message = 'Se logró eliminar al estudiante correctamente.';
+      response.response = {};
+      response.status = 200;
+    } catch (error) {
+      response.error = true;
+      response.message = 'No se pudo realizar la solicitud.';
+      response.response = {
+        errors: { student: [`${error.message}`] },
       };
       response.status = 422;
     }

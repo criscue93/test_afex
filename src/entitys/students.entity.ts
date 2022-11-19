@@ -35,8 +35,8 @@ export class students {
   @Column({ type: 'int', nullable: true })
   edad: number;
 
-  @Column({ type: 'varchar', length: 15, default: null })
-  celular: string;
+  @Column({ type: 'int' })
+  celular: number;
 
   @Column({ type: 'varchar', length: 70 })
   email: string;

@@ -7,7 +7,6 @@ import { StudentMySqlController } from './studentsMySql/students.controller';
 import { StudentMySqlService } from './studentsMySql/students.service';
 import { StudentMongoDbController } from './studentsMongoDb/students.controller';
 import { StudentMongoDbService } from './studentsMongoDb/students.service';
-import { StudentMongoDbQueryService } from './studentsMongoDb/students-query.service';
 
 @Module({
   imports: [DatabaseModule],
@@ -18,7 +17,6 @@ import { StudentMongoDbQueryService } from './studentsMongoDb/students-query.ser
     StudentMySqlService,
     StudentMySqlQueryService,
     StudentMongoDbService,
-    StudentMongoDbQueryService,
   ],
 })
 export class ApiModule {}

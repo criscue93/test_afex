@@ -1,5 +1,6 @@
 import { students } from 'src/entitys/students.entity';
 import { DataSource } from 'typeorm';
+import * as mongoose from 'mongoose';
 
 export const databaseProviders = [
   {
@@ -18,5 +19,10 @@ export const databaseProviders = [
 
       return dataSource.initialize();
     },
+  },
+  {
+    provide: 'DATABASE_CONNECTION',
+    useFactory: (): Promise<typeof mongoose> =>
+      mongoose.connect(process.env.APP_MONGO),
   },
 ];
