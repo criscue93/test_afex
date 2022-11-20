@@ -1,16 +1,12 @@
-<p align="center">
-  <a href="https://github.com/criscue93" target="blank"><img src="src/img/logo.png" width="200" alt="KodeMain Logo" /></a>
-</p>
-
 <p align="center"></p><p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
 
-## Description
+## Descripción
 
-App to be able to start a project with NestJs, with connection to Mysql and MongoDB.
+Microservicio que tiene un CRUD de estudiantes, con dos BDs, una relacional MySql y otra no relacional MongoDB.
 
-## Installation
+## Instalación
 
 ```bash
 $ npm install
@@ -18,7 +14,7 @@ $ npm install
 
 ## .ENV
 
-In the .env.example file are the environment variables to be used to run the project.
+En el archivo .env.example se encuentran las variables de entorno a utilizar, se tiene que crear un archivo .env donde se colocan las varibales correspondientes.
 
 ## Running the app
 
@@ -39,9 +35,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - Ing. Cristian Cueto V.
-- Developer - Ing. Cristian Cueto V.
+- Author - Developer
+- Ing. Cristian Cueto V.
 
 ## License
 
-APP-NESTJS API [MIT licensed](LICENSE).
+TEST-AFEX API [MIT licensed](LICENSE).
