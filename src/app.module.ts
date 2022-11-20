@@ -6,8 +6,15 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './connection/database.module';
 import { connectProviders } from './connection/connect.providers';
 import { QueryModule } from './services/querys.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
-  imports: [ApiModule, DatabaseModule, QueryModule, ConfigModule.forRoot()],
+  imports: [
+    ApiModule,
+    AuthModule,
+    DatabaseModule,
+    QueryModule,
+    ConfigModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [...connectProviders, AppService],
 })

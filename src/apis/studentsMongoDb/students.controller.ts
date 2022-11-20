@@ -7,8 +7,10 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
   Version,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { validate } from 'class-validator';
 import { Response } from 'express';
@@ -216,6 +218,7 @@ export class StudentMongoDbController {
 
   @Version('1')
   @Delete('delete/:id')
+  @UseGuards(AuthGuard('api-key'))
   @ApiOperation({
     summary: 'Servicio para eliminar un estudiante.',
   })
